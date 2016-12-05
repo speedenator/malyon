@@ -3,7 +3,7 @@
 ;; Author: Peter Ilberg <peter.ilberg@gmail.com>, Erik Selberg <erik@selberg.org>
 ;; Maintainer: Erik Selberg <erik@selberg.org>
 ;; Version: 20161204
-;; Package-Requires: ()
+;; Package-Requires: ((cl-lib "0.5"))
 ;; Keywords: games, emulations
 ;; URL: https://github.com/speedenator/malyon
 
@@ -80,7 +80,7 @@
 ;; global variables - moved here to appease the byte-code compiler
 
 ;; requirements
-; (require 'cl-lib)
+(require 'cl-lib)
 
 ;; story file information
 
@@ -1372,7 +1372,7 @@ bugs, testing, suggesting and/or contributing improvements:
   "Joins three ztext characters into two bytes."
   (let ((a (car          list))
 	(b (cadr  list))
-	(c (caddr list))
+	(c (cl-caddr list))
 	(x (if (zerop stop) 0 128)))
     (list (logior x (logand 255 (logior (lsh a 2) (lsh b -3))))
 	  (logand 255 (logior (lsh b 5) c)))))
@@ -1380,8 +1380,8 @@ bugs, testing, suggesting and/or contributing improvements:
 (defun malyon-encode-dictionary-word (l)
   "Converts a list of ztext characters into a dictionary word."
   (let* ((first  l)
-	 (second (cdddr first))
-	 (third  (cdddr second)))
+	 (second (cl-cdddr first))
+	 (third  (cl-cdddr second)))
     (apply 'vector
 	   (if (< malyon-story-version 5)
 	       (append (malyon-join-characters 0 first)
@@ -2983,7 +2983,7 @@ The result is stored at encoded."
 	 (word  (car           words))
 	 (start (car           word))
 	 (len   (cadr   word))
-	 (code  (caddr  word))
+	 (code  (cl-caddr  word))
 	 (entry (malyon-lookup dict code))
 	 (i     0))
     (while (not (or (null words) (= i (malyon-read-byte parse))))
@@ -2996,7 +2996,7 @@ The result is stored at encoded."
 	    word  (car           words)
 	    start (car           word)
 	    len   (cadr   word)
-	    code  (caddr  word)
+	    code  (cl-caddr  word)
 	    entry (malyon-lookup dict code)
 	    i     (+ 1 i)))
     (malyon-store-byte (+ 1 parse) i)))
