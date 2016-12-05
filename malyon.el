@@ -1,6 +1,6 @@
 ;;; malyon.el --- mode to execute z code files version 3, 5, 8
 
-;; Author: Peter Ilberg <peter.ilberg@gmail.com>
+;; Author: Peter Ilberg <peter.ilberg@gmail.com>, Erik Selberg <erik@selberg.org>
 ;; Maintainer: Erik Selberg <erik@selberg.org>
 ;; Version: 20161204
 ;; Package-Requires: ()
@@ -78,6 +78,9 @@
 ;;; Code:
 
 ;; global variables - moved here to appease the byte-code compiler
+
+;; requirements
+; (require 'cl-lib)
 
 ;; story file information
 
@@ -275,30 +278,31 @@ bugs, testing, suggesting and/or contributing improvements:
   (message "Use M-x malyon if you want to play a zcode game."))
 
 ;; compatibility functions for GNU emacs
+;; nuked 12/4/16 by erik@selberg.org --- these aren't needed
 
-(if (fboundp 'cadr)
-    (defalias 'malyon-cadr 'cadr)
-  (defun malyon-cadr (list)
-    "Take the cadr of the list."
-    (car (cdr list))))
+;; (if (fboundp 'cadr)
+;;     (defalias 'malyon-cadr 'cadr)
+;;   (defun malyon-cadr (list)
+;;     "Take the cadr of the list."
+;;     (car (cdr list))))
 
-(if (fboundp 'caddr)
-    (defalias 'malyon-caddr 'caddr)
-  (defun malyon-caddr (list)
-    "Take the caddr of the list."
-    (car (cdr (cdr list)))))
+;; (if (fboundp 'caddr)
+;;     (defalias 'malyon-caddr 'caddr)
+;;   (defun malyon-caddr (list)
+;;     "Take the caddr of the list."
+;;     (car (cdr (cdr list)))))
 
-(if (fboundp 'cdddr)
-    (defalias 'malyon-cdddr 'cdddr)
-  (defun malyon-cdddr (list)
-    "Take the cdddr of the list."
-    (cdr (cdr (cdr list)))))
+;; (if (fboundp 'cdddr)
+;;     (defalias 'malyon-cdddr 'cdddr)
+;;   (defun malyon-cdddr (list)
+;;     "Take the cdddr of the list."
+;;     (cdr (cdr (cdr list)))))
 
-(if (fboundp 'char-before)
-    (defalias 'malyon-char-before 'char-before)
-  (defun malyon-char-before ()
-    "Return the character before the point."
-    (char-after (- (point) 1))))
+;; (if (fboundp 'char-before)
+;;     (defalias 'malyon-char-before 'char-before)
+;;   (defun malyon-char-before ()
+;;     "Return the character before the point."
+;;     (char-after (- (point) 1))))
 
 (if (fboundp 'char-to-int)
     (defalias 'malyon-char-to-int 'char-to-int)
@@ -306,11 +310,11 @@ bugs, testing, suggesting and/or contributing improvements:
     "Convert a character into an integer."
     c))
 
-(if (fboundp 'characterp)
-    (defalias 'malyon-characterp 'characterp)
-  (defun malyon-characterp (x)
-    "Test for a character."
-    (and (numberp x) (<= 0 x) (< x 256))))
+;; (if (fboundp 'characterp)
+;;     (defalias 'malyon-characterp 'characterp)
+;;   (defun malyon-characterp (x)
+;;     "Test for a character."
+;;     (and (numberp x) (<= 0 x) (< x 256))))
 
 (defun malyon-disable-multibyte ()
   "Disable multibyte support in the current buffer."
@@ -330,23 +334,24 @@ bugs, testing, suggesting and/or contributing improvements:
     "Convert an integer into a character."
     i))
 
-(if (fboundp 'mapc)
-    (defalias 'malyon-mapc 'mapc)
-  (defun malyon-mapc (function list)
-    "Apply fun to every element of args ignoring the results."
-    (if (null list)
-	'()
-      (funcall function (car list))
-      (malyon-mapc function (cdr list)))))
+;; (if (fboundp 'mapc)
+;;     (defalias 'malyon-mapc 'mapc)
+;;   (defun malyon-mapc (function list)
+;;     "Apply fun to every element of args ignoring the results."
+;;     (if (null list)
+;; 	'()
+;;       (funcall function (car list))
+;;       (malyon-mapc function (cdr list)))))
 
-(if (fboundp 'mapcan)
-    (defalias 'malyon-mapcan 'mapcan)
-  (defun malyon-mapcan (function list)
-    "Apply fun to every element of args nconc'ing the result."
-    (if (null list)
-	'()
-      (nconc (funcall function (car list))
-	     (malyon-mapcan function (cdr list))))))
+;; (if (fboundp 'mapcan)
+;;     (defalias 'malyon-mapcan 'mapcan)
+;;   (defun malyon-mapcan (function list)
+;;     "Apply fun to every element of args nconc'ing the result."
+;;     (if (null list)
+;; 	'()
+;;       (nconc (funcall function (car list))
+;; 	     (malyon-mapcan function (cdr list))))))
+
 
 ; Do not use the built-in conversion via 'multibyte-char-to-unibyte.
 (defun malyon-multibyte-char-to-unibyte (char)
@@ -364,44 +369,44 @@ bugs, testing, suggesting and/or contributing improvements:
   (defun malyon-redisplay-frame (frame &rest ignore)
     "Redisplay the given frame."))
 
-(if (fboundp 'remove)
-    (defalias 'malyon-remove 'remove)
-  (defun malyon-remove (element list)
-    "Remove the element from the list."
-    (cond ((null list)
-	   '())
-	  ((eq element (car list))
-	   (malyon-remove element (cdr list)))
-	  ((equal element (car list))
-	   (malyon-remove element (cdr list)))
-	  (t
-	   (cons (car list)
-		 (malyon-remove element (cdr list)))))))
+;; (if (fboundp 'remove)
+;;     (defalias 'malyon-remove 'remove)
+;;   (defun malyon-remove (element list)
+;;     "Remove the element from the list."
+;;     (cond ((null list)
+;; 	   '())
+;; 	  ((eq element (car list))
+;; 	   (malyon-remove element (cdr list)))
+;; 	  ((equal element (car list))
+;; 	   (malyon-remove element (cdr list)))
+;; 	  (t
+;; 	   (cons (car list)
+;; 		 (malyon-remove element (cdr list)))))))
 
 (if (fboundp 'set-keymap-name)
     (defalias 'malyon-set-keymap-name 'set-keymap-name)
   (defun malyon-set-keymap-name (keymap name)
     "Set the name of the keymap."))
 
-(if (fboundp 'string-to-list)
-    (defalias 'malyon-string-to-list 'string-to-list)
-  (defun malyon-string-to-list (s)
-    "Convert a string into a list of characters."
-    (let ((i (- (length s) 1)) (l '()))
-      (while (<= 0 i)
-	(setq l (cons (aref s i) l)
-	      i (- i 1)))
-      l)))
+;; (if (fboundp 'string-to-list)
+;;     (defalias 'malyon-string-to-list 'string-to-list)
+;;   (defun malyon-string-to-list (s)
+;;     "Convert a string into a list of characters."
+;;     (let ((i (- (length s) 1)) (l '()))
+;;       (while (<= 0 i)
+;; 	(setq l (cons (aref s i) l)
+;; 	      i (- i 1)))
+;;       l)))
 
-(if (fboundp 'string-to-vector)
-    (defalias 'malyon-string-to-vector 'string-to-vector)
-  (defun malyon-string-to-vector (s)
-    "Convert a string into a vector of characters."
-    (let* ((i 0) (l (length s)) (v (make-vector l 0)))
-      (while (< i l)
-	(aset v i (aref s i))
-	(setq i (+ 1 i)))
-      v)))
+;; (if (fboundp 'string-to-vector)
+;;     (defalias 'malyon-string-to-vector 'string-to-vector)
+;;   (defun malyon-string-to-vector (s)
+;;     "Convert a string into a vector of characters."
+;;     (let* ((i 0) (l (length s)) (v (make-vector l 0)))
+;;       (while (< i l)
+;; 	(aset v i (aref s i))
+;; 	(setq i (+ 1 i)))
+;;       v)))
 
 ; Do not use the built-in conversion via 'unibyte-char-to-multibyte.
 (defun malyon-unibyte-char-to-multibyte (char)
@@ -422,11 +427,11 @@ bugs, testing, suggesting and/or contributing improvements:
     "Get the height of the window's displayed region."
     (- (window-height) 1)))
 
-(if (fboundp 'yes-or-no-p-minibuf)
-    (defalias 'malyon-yes-or-no-p-minibuf 'yes-or-no-p-minibuf)
-  (defun malyon-yes-or-no-p-minibuf (prompt)
-    "Ask a yes or no question."
-    (yes-or-no-p prompt)))
+;; (if (fboundp 'yes-or-no-p-minibuf)
+;;     (defalias 'malyon-yes-or-no-p-minibuf 'yes-or-no-p-minibuf)
+;;   (defun malyon-yes-or-no-p-minibuf (prompt)
+;;     "Ask a yes or no question."
+;;     (yes-or-no-p prompt)))
 
 ;; global variables for the malyon mode
 
@@ -533,9 +538,9 @@ bugs, testing, suggesting and/or contributing improvements:
   "Print a section divider and begin a new section."
   (if malyon-print-separator
       (progn
-	(malyon-mapc 'malyon-putchar-transcript '(?\n ?\n ?* ?  ?* ?  ?*))
+	(mapc 'malyon-putchar-transcript '(?\n ?\n ?* ?  ?* ?  ?*))
 	(center-line)
-	(malyon-mapc 'malyon-putchar-transcript '(?\n ?\n))
+	(mapc 'malyon-putchar-transcript '(?\n ?\n))
 	(setq malyon-print-separator nil)))
   (narrow-to-region (point-max) (point-max)))
 
@@ -774,8 +779,7 @@ bugs, testing, suggesting and/or contributing improvements:
 
 (defun malyon-load-story-file (file-name)
   "Load a z code story file into an internal vector."
-  (save-excursion
-    (set-buffer (create-file-buffer file-name))
+  (with-current-buffer (create-file-buffer file-name)
     (malyon-disable-multibyte)
     (malyon-erase-buffer)
     (let ((coding-system-for-read 'binary))
@@ -783,7 +787,7 @@ bugs, testing, suggesting and/or contributing improvements:
     (setq malyon-story-file-name file-name)
     (setq malyon-story-file (buffer-substring-no-properties (point-min)
 							    (point-max)))
-    (setq malyon-story-file (malyon-string-to-vector malyon-story-file))
+    (setq malyon-story-file (string-to-vector malyon-story-file))
     (if (not (eq ?\^A 1))
 	(let ((i 0))
 	  (while (< i (length malyon-story-file))
@@ -887,7 +891,7 @@ bugs, testing, suggesting and/or contributing improvements:
   (if (< malyon-story-version 5)
       (setq malyon-score-game (zerop (logand 2 (malyon-read-byte 1)))))
   (setq malyon-packed-multiplier
-	(malyon-cadr (assq malyon-story-version '((3 2) (5 4) (8 8)))))
+	(cadr (assq malyon-story-version '((3 2) (5 4) (8 8)))))
   (if (or (< malyon-story-version 5) (zerop (malyon-read-word 52)))
       (setq malyon-alphabet (concat "abcdefghijklmnopqrstuvwxyz"
 				    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -937,6 +941,7 @@ bugs, testing, suggesting and/or contributing improvements:
   (malyon-print "A z-code interpreter for version 3, 5, and 8 games.")
   (malyon-newline)
   (malyon-print "(c) 1999-2011 by Peter Ilberg <peter.ilberg@gmail.com>")
+  (malyon-print "(c) 2016 by Erik Selberg <erik@selberg.org>")
   (malyon-newline)
   (malyon-newline))
 
@@ -970,8 +975,7 @@ bugs, testing, suggesting and/or contributing improvements:
   "Print error message and abort."
   (setq message (concat "Malyon fatal error: " message))
   (unwind-protect
-      (save-excursion
-	(set-buffer malyon-transcript-buffer)
+      (with-current-buffer malyon-transcript-buffer
 	(goto-char (point-max))
 	(newline)
 	(newline)
@@ -1064,7 +1068,7 @@ bugs, testing, suggesting and/or contributing improvements:
 (defsubst malyon-unicode-to-zscii (char)
   "Converts a unicode character to zscii."
   (setq char (malyon-multibyte-char-to-unibyte char))
-  (setq char (if (malyon-characterp char) (malyon-char-to-int char) char))
+  (setq char (if (characterp char) (malyon-char-to-int char) char))
   (if (= 13 char)
       ?\r
     (let ((i 1) (found 0))
@@ -1113,7 +1117,7 @@ bugs, testing, suggesting and/or contributing improvements:
   (if (= stream 3)
       (setq malyon-output-streams-tables (cdr malyon-output-streams-tables))
     (setq malyon-output-streams
-	  (malyon-remove (malyon-output-stream-function stream)
+	  (remove (malyon-output-stream-function stream)
 			 malyon-output-streams))))
 
 (defun malyon-update-output-streams ()
@@ -1121,8 +1125,8 @@ bugs, testing, suggesting and/or contributing improvements:
   (let ((one (or (member 'malyon-putchar-transcript malyon-output-streams)
 		 (member 'malyon-putchar-status     malyon-output-streams))))
     (setq malyon-output-streams
-	  (malyon-remove 'malyon-putchar-transcript
-			 (malyon-remove 'malyon-putchar-status
+	  (remove 'malyon-putchar-transcript
+			 (remove 'malyon-putchar-status
 					malyon-output-streams)))
     (if one
 	(malyon-add-output-stream 1 0))))
@@ -1132,7 +1136,7 @@ bugs, testing, suggesting and/or contributing improvements:
   (setq char (malyon-zscii-to-unicode char))
   (if malyon-output-streams-tables
       (malyon-putchar-table char (car malyon-output-streams-tables))
-    (malyon-mapc (lambda (s) (funcall s char)) malyon-output-streams)))
+    (mapc (lambda (s) (funcall s char)) malyon-output-streams)))
 
 ;; printing text
 
@@ -1155,13 +1159,13 @@ bugs, testing, suggesting and/or contributing improvements:
 
 (defun malyon-print (object)
   "Print text." 
-  (let ((text (if (malyon-characterp object) (char-to-string object) object))
+  (let ((text (if (characterp object) (char-to-string object) object))
 	(start))
     (if (eq malyon-transcript-buffer (current-buffer))
 	(goto-char (point-max))
       (goto-char malyon-status-buffer-point))
     (setq start (point))
-    (malyon-print-characters (malyon-string-to-list text))
+    (malyon-print-characters (string-to-list text))
     (put-text-property start (point) 'face malyon-current-face)
     (if (eq malyon-status-buffer (current-buffer))
 	(setq malyon-status-buffer-point (point))
@@ -1169,7 +1173,7 @@ bugs, testing, suggesting and/or contributing improvements:
 
 (defun malyon-print-characters (text)
   "Print a list of characters."
-  (malyon-mapc 'malyon-output-character text))
+  (mapc 'malyon-output-character text))
 
 (defsubst malyon-print-state-new (char shift abbr zscii zcode)
   "Generate a new print state."
@@ -1343,7 +1347,7 @@ bugs, testing, suggesting and/or contributing improvements:
   (let* ((prev (aref malyon-history 0))
 	 (curr (aref malyon-history 1))
 	 (next (aref malyon-history 2))
-	 (l    (malyon-remove entry
+	 (l    (remove entry
 			      (append (nreverse prev)
 				      (if curr (cons curr next) next))))
 	 (cut  (- (length l) 19)))
@@ -1351,7 +1355,7 @@ bugs, testing, suggesting and/or contributing improvements:
       (setq l   (cdr l)
 	    cut (- cut 1)))
     (aset malyon-history 0
-	  (malyon-remove nil (malyon-remove "" (cons entry (nreverse l)))))
+	  (remove nil (remove "" (cons entry (nreverse l)))))
     (aset malyon-history 1 nil)
     (aset malyon-history 2 '())))
 
@@ -1361,14 +1365,14 @@ bugs, testing, suggesting and/or contributing improvements:
   "Convert a list of characters into a dictionary word."
   (list (car (car chars))
 	(length chars)
-	(malyon-encode-dictionary-word (append (malyon-mapcan 'cdr chars)
+	(malyon-encode-dictionary-word (append (cl-mapcan 'cdr chars)
 					       '(5 5 5 5 5 5 5 5)))))
 
 (defsubst malyon-join-characters (stop list)
   "Joins three ztext characters into two bytes."
   (let ((a (car          list))
-	(b (malyon-cadr  list))
-	(c (malyon-caddr list))
+	(b (cadr  list))
+	(c (caddr list))
 	(x (if (zerop stop) 0 128)))
     (list (logior x (logand 255 (logior (lsh a 2) (lsh b -3))))
 	  (logand 255 (logior (lsh b 5) c)))))
@@ -1376,8 +1380,8 @@ bugs, testing, suggesting and/or contributing improvements:
 (defun malyon-encode-dictionary-word (l)
   "Converts a list of ztext characters into a dictionary word."
   (let* ((first  l)
-	 (second (malyon-cdddr first))
-	 (third  (malyon-cdddr second)))
+	 (second (cdddr first))
+	 (third  (cdddr second)))
     (apply 'vector
 	   (if (< malyon-story-version 5)
 	       (append (malyon-join-characters 0 first)
@@ -1493,7 +1497,7 @@ bugs, testing, suggesting and/or contributing improvements:
     (while (< i (malyon-read-byte dict))
       (setq l (cons (malyon-read-byte (+ dict 1 i)) l)
 	    i (+ 1 i)))
-    (malyon-mapcan (lambda (x) (malyon-encode-single-character l x)) list)))
+    (cl-mapcan (lambda (x) (malyon-encode-single-character l x)) list)))
 
 (defun malyon-text-length (address)
   "Return the length of the input text."
@@ -1530,16 +1534,14 @@ bugs, testing, suggesting and/or contributing improvements:
 
 (defun malyon-adjust-transcript ()
   "Adjust the position of the transcript text."
-  (save-excursion
+  (with-current-buffer malyon-transcript-buffer
     (setq malyon-status-buffer-grew-this-turn nil)
-    (set-buffer malyon-transcript-buffer)
     (goto-char (point-max))
     (recenter (- (malyon-window-displayed-height) 2))))
 
 (defun malyon-prepare-status-buffer (status)
   "Fill the status buffer with empty lines."
-  (save-excursion
-    (set-buffer malyon-status-buffer)
+  (with-current-buffer malyon-status-buffer
     (let ((lines (count-lines (point-min) (point-max)))
 	  (new   status))
       (if (zerop lines)
@@ -1612,8 +1614,7 @@ gets the remaining lines."
   (setq malyon-stack (copy-sequence      (aref state 3)))
   (setq malyon-story-file (copy-sequence (aref state 4)))
   (setq malyon-game-state-quetzal        (aref state 5))
-  (save-excursion
-    (malyon-erase-buffer malyon-status-buffer)
+  (with-current-buffer  malyon-status-buffer
     (malyon-split-buffer-windows 0)
     (setq malyon-last-cursor-position-after-input
 	  (malyon-point-max malyon-transcript-buffer))))
@@ -1645,7 +1646,7 @@ gets the remaining lines."
   (if (= (point) (point-max))
       0
     (forward-char 1)
-    (malyon-char-to-int (malyon-char-before))))
+    (malyon-char-to-int (char-before))))
 
 (defsubst malyon-read-word-from-file ()
   "Read the next word from the last opened file."
@@ -1680,8 +1681,7 @@ gets the remaining lines."
   "Save the current game state or a memory section to disk."
   (interactive "FSave file: ")
   (condition-case nil
-      (save-excursion
-	(set-buffer (create-file-buffer file))
+      (with-current-buffer (create-file-buffer file)
 	(malyon-disable-multibyte)
 	(malyon-erase-buffer)
 	(cond (table (malyon-save-table table length))
@@ -2456,7 +2456,7 @@ The result is stored at encoded."
       (setq l (cons (malyon-read-byte (+ text from i -1)) l)
 	    i (- i 1)))
     (setq word (malyon-encode-dictionary-word
-		(append (malyon-mapcan 'malyon-encode-into-ztext l)
+		(append (cl-mapcan 'malyon-encode-into-ztext l)
 			'(5 5 5 5 5 5 5 5))))
     (while (< i 6)
       (malyon-store-byte j (car l))
@@ -2497,8 +2497,7 @@ The result is stored at encoded."
 
 (defun malyon-opcode-get-cursor (array)
   "Retrieves the current cursor position."
-  (save-excursion
-    (set-buffer malyon-status-buffer)
+  (with-current-buffer malyon-status-buffer
     (malyon-store-word array (- (count-lines (point-min) (point)) 1))
     (malyon-store-word (+ 2 array) (+ 1 (current-column)))))
 
@@ -2983,8 +2982,8 @@ The result is stored at encoded."
   (let* ((words (malyon-text-to-words text dict))
 	 (word  (car           words))
 	 (start (car           word))
-	 (len   (malyon-cadr   word))
-	 (code  (malyon-caddr  word))
+	 (len   (cadr   word))
+	 (code  (caddr  word))
 	 (entry (malyon-lookup dict code))
 	 (i     0))
     (while (not (or (null words) (= i (malyon-read-byte parse))))
@@ -2996,8 +2995,8 @@ The result is stored at encoded."
       (setq words (cdr           words)
 	    word  (car           words)
 	    start (car           word)
-	    len   (malyon-cadr   word)
-	    code  (malyon-caddr  word)
+	    len   (cadr   word)
+	    code  (caddr  word)
 	    entry (malyon-lookup dict code)
 	    i     (+ 1 i)))
     (malyon-store-byte (+ 1 parse) i)))
@@ -3028,7 +3027,7 @@ The result is stored at encoded."
 			    malyon-aread-beginning-of-line
 			  (point))
 			(point))))
-	       (vec  (malyon-string-to-vector input))
+	       (vec  (string-to-vector input))
 	       (text (apply 'vector (mapcar 'malyon-unicode-to-zscii vec)))
 	       (len  (min (malyon-read-byte malyon-aread-text) (length text)))
 	       (i    0))
@@ -3082,7 +3081,7 @@ The result is stored at encoded."
       (progn
 	(malyon-store-variable 
 	 (malyon-read-code-byte)
-	 (malyon-char-to-int (malyon-unicode-to-zscii last-command-char)))
+	 (malyon-char-to-int (malyon-unicode-to-zscii last-command-event)))
 	(use-local-map malyon-keymap-read)
 	(malyon-interpreter))
     (error
@@ -3095,8 +3094,7 @@ The result is stored at encoded."
     (cond ((> malyon-aread-beginning-of-line (point))
 	   (funcall malyon-history-saved-up arg))
 	  (input
-	   (save-excursion
-	     (set-buffer malyon-transcript-buffer)
+	   (with-current-buffer malyon-transcript-buffer
 	     (delete-region malyon-aread-beginning-of-line (point-max)))
 	   (goto-char (point-max))
 	   (insert input)
@@ -3109,8 +3107,7 @@ The result is stored at encoded."
     (cond ((> malyon-aread-beginning-of-line (point))
 	   (funcall malyon-history-saved-down arg))
 	  (input
-	   (save-excursion
-	     (set-buffer malyon-transcript-buffer)
+	   (with-current-buffer malyon-transcript-buffer
 	     (delete-region malyon-aread-beginning-of-line (point-max)))
 	   (goto-char (point-max))
 	   (insert input)
@@ -3187,8 +3184,7 @@ The result is stored at encoded."
 	 (get-buffer-create
 	  (concat "Malyon Trace " malyon-story-file-name))))
     (if trace
-	(save-excursion
-	  (set-buffer trace)
+	(with-current-buffer trace
 	  (malyon-erase-buffer)
 	  (insert (concat "Tracing " malyon-story-file-name "..."))
 	  (newline)))))
@@ -3197,8 +3193,7 @@ The result is stored at encoded."
   "Output tracing newline."
   (let ((trace (get-buffer (concat "Malyon Trace " malyon-story-file-name))))
     (if trace
-	(save-excursion
-	  (set-buffer trace)
+	(with-current-buffer trace
 	  (goto-char (point-max))
 	  (newline)))))
 
@@ -3209,11 +3204,11 @@ The result is stored at encoded."
 	   pc
 	   opcode
 	   (symbol-name (aref malyon-opcodes opcode))
-	   (apply 'concat (malyon-mapcan
+	   (apply 'concat (cl-mapcan
 			   (lambda (x)
 			     (list " "
 				   (number-to-string
-				    (if (malyon-characterp x)
+				    (if (characterp x)
 					(malyon-char-to-int x)
 				      x))))
 			   operands)))))
@@ -3222,8 +3217,7 @@ The result is stored at encoded."
   "Output tracing string."
   (let ((trace (get-buffer (concat "Malyon Trace " malyon-story-file-name))))
     (if (and trace s)
-	(save-excursion
-	  (set-buffer trace)
+	(with-current-buffer trace
 	  (goto-char (point-max))
 	  (insert s)))))
 
@@ -3231,8 +3225,7 @@ The result is stored at encoded."
   "Output tracing object."
   (let ((trace (get-buffer (concat "Malyon Trace " malyon-story-file-name))))
     (if (and trace o)
-	(save-excursion
-	  (set-buffer trace)
+	(with-current-buffer trace
 	  (goto-char (point-max))
 	  (prin1 o trace)))))
 
