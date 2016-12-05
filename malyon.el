@@ -427,11 +427,11 @@ bugs, testing, suggesting and/or contributing improvements:
     "Get the height of the window's displayed region."
     (- (window-height) 1)))
 
-;; (if (fboundp 'yes-or-no-p-minibuf)
-;;     (defalias 'malyon-yes-or-no-p-minibuf 'yes-or-no-p-minibuf)
-;;   (defun malyon-yes-or-no-p-minibuf (prompt)
-;;     "Ask a yes or no question."
-;;     (yes-or-no-p prompt)))
+(if (fboundp 'yes-or-no-p-minibuf)
+    (defalias 'malyon-yes-or-no-p-minibuf 'yes-or-no-p-minibuf)
+  (defun malyon-yes-or-no-p-minibuf (prompt)
+    "Ask a yes or no question."
+    (yes-or-no-p prompt)))
 
 ;; global variables for the malyon mode
 
