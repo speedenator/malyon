@@ -1,9 +1,9 @@
 ; malyon.el --- mode to execute Z-code files version 3, 5, 8
 
-;; Author: Peter Ilberg <peter.ilberg@gmail.com>, Erik Selberg <erik@selberg.org>
-;; Maintainer: Erik Selberg <erik@selberg.org>
+;; Author: Peter Ilberg <peter.ilberg@gmail.com>, Christopher Madsen <cjm@cjmweb.net>, Erik Selberg <erik@selberg.org>
+;; Maintainer: Christopher Madsen <cjm@cjmweb.net>, Erik Selberg <erik@selberg.org>
 ;; Version: 20161204
-;; Package-Requires: ((cl-lib "0.5"))
+;; Package-Requires: ((cl-lib "0.5") (bindat))
 ;; Keywords: games, emulations
 ;; URL: https://github.com/speedenator/malyon
 
@@ -11,7 +11,7 @@
 ;; (I am unable to continue supporting malyon.el. Please send me an
 ;;  email if you are interested in taking over the project. Thanks.)
 
-;; Copyright (C) 1999-2011 Peter Ilberg
+;; Copyright (C) 1999-2016 Peter Ilberg, Christopher Madsen, Erik Selberg
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a
 ;; copy of this software and associated documentation files (the "Software"),
@@ -80,7 +80,11 @@
 ;; global variables - moved here to appease the byte-code compiler
 
 ;; requirements
-(defconst malyon-version "1.1" "Malyon version number")
+
+(require 'cl-lib)
+(require 'bindat)
+
+(defconst malyon-version "1.2" "Malyon version number")
 
 (defgroup malyon nil
   "Play Z-machine interactive fiction games."
@@ -94,7 +98,7 @@
 Nil means use the buffer's default directory."
   :type '(choice (const nil) directory)
   :group 'malyon)
-(require 'cl-lib)
+
 
 ;; story file information
 
@@ -338,10 +342,10 @@ bugs, testing, suggesting and/or contributing improvements:
 ;;     "Return the character before the point."
 ;;     (char-after (- (point) 1))))
 
-(if (fboundp 'char-to-int)
-    (defalias 'malyon-char-to-int 'char-to-int)
-  (defun malyon-char-to-int (c)
-    "Convert a character into an integer."
+(defun malyon-char-to-int (c)
+  "Convert a character into an integer."
+  (if (fboundp 'char-to-int)
+      (char-to-int c)
     c))
 
 ;; (if (fboundp 'characterp)
@@ -362,10 +366,10 @@ bugs, testing, suggesting and/or contributing improvements:
         (malyon-begin-section)
       (erase-buffer))))
 
-(if (fboundp 'int-to-char)
-    (defalias 'malyon-int-to-char 'int-to-char)
-  (defun malyon-int-to-char (i)
-    "Convert an integer into a character."
+(defun malyon-int-to-char (i)
+  "Convert an integer into a character."
+  (if (fboundp 'int-to-char)
+    (int-to-char i)
     i))
 
 ;; (if (fboundp 'mapc)
@@ -398,10 +402,11 @@ bugs, testing, suggesting and/or contributing improvements:
     (if buffer (set-buffer buffer))
     (point-max)))
 
-(if (fboundp 'redisplay-frame)
-    (defalias 'malyon-redisplay-frame 'redisplay-frame)
-  (defun malyon-redisplay-frame (frame &rest ignore)
-    "Redisplay the given frame."))
+(defun malyon-redisplay-frame (frame &rest ignore)
+  "Redisplay the given frame."
+  (if (fboundp 'redisplay-frame)
+      (redisplay-frame frame ignore)))
+
 
 ;; (if (fboundp 'remove)
 ;;     (defalias 'malyon-remove 'remove)
@@ -417,10 +422,11 @@ bugs, testing, suggesting and/or contributing improvements:
 ;; 	   (cons (car list)
 ;; 		 (malyon-remove element (cdr list)))))))
 
-(if (fboundp 'set-keymap-name)
-    (defalias 'malyon-set-keymap-name 'set-keymap-name)
-  (defun malyon-set-keymap-name (keymap name)
-    "Set the name of the keymap."))
+;; legacy thing... normally this is a noop for FSF Emacs
+(defun malyon-set-keymap-name (keymap name)
+  "Set the name of the keymap."
+  (if (fboundp 'set-keymap-name)
+      (set-keymap-name keymap name)))
 
 ;; (if (fboundp 'string-to-list)
 ;;     (defalias 'malyon-string-to-list 'string-to-list)
@@ -455,16 +461,17 @@ bugs, testing, suggesting and/or contributing improvements:
       (setq begin (+ 1 begin)))
     (reverse result)))
 
-(if (fboundp 'window-displayed-height)
-    (defalias 'malyon-window-displayed-height 'window-displayed-height)
-  (defun malyon-window-displayed-height (&optional window)
-    "Get the height of the window's displayed region."
+
+(defun malyon-window-displayed-height (&optional window)
+  "Get the height of the window's displayed region."
+  (if (fboundp 'window-displayed-height)
+      (window-displayed-height window)
     (- (window-height) 1)))
 
-(if (fboundp 'yes-or-no-p-minibuf)
-    (defalias 'malyon-yes-or-no-p-minibuf 'yes-or-no-p-minibuf)
-  (defun malyon-yes-or-no-p-minibuf (prompt)
-    "Ask a yes or no question."
+(defun malyon-yes-or-no-p-minibuf (prompt)
+  "Ask a yes or no question."
+  (if (fboundp 'yes-or-no-p-minibuf)
+      (yes-or-no-p-minibuf prompt)
     (yes-or-no-p prompt)))
 
 ;; global variables for the malyon mode
@@ -589,9 +596,9 @@ bugs, testing, suggesting and/or contributing improvements:
   "Print a section divider and begin a new section."
   (if malyon-print-separator
       (progn
-        (malyon-mapc 'malyon-putchar-transcript '(?\n ?\n ?* ?  ?* ?  ?*))
+        (mapc 'malyon-putchar-transcript '(?\n ?\n ?* ?  ?* ?  ?*))
         (center-line)
-        (malyon-mapc 'malyon-putchar-transcript '(?\n ?\n))
+        (mapc 'malyon-putchar-transcript '(?\n ?\n))
         (setq malyon-print-separator nil)))
   (narrow-to-region (point-max) (point-max)))
 
@@ -830,7 +837,7 @@ bugs, testing, suggesting and/or contributing improvements:
 
 (defun malyon-load-story-from-buffer (min max)
   "Load a Z-code story into an internal vector."
-  (setq malyon-story-file (malyon-string-to-vector
+  (setq malyon-story-file (string-to-vector
                            (buffer-substring-no-properties min max)))
   (if (not (eq ?\^A 1))
       (let ((i 0))
@@ -996,7 +1003,7 @@ bugs, testing, suggesting and/or contributing improvements:
   (if (< malyon-story-version 5)
       (setq malyon-score-game (zerop (logand 2 (malyon-read-byte 1)))))
   (setq malyon-packed-multiplier
-        (malyon-cadr (assq malyon-story-version '((3 2) (5 4) (8 8)))))
+        (cadr (assq malyon-story-version '((3 2) (5 4) (8 8)))))
   (if (or (< malyon-story-version 5) (zerop (malyon-read-word 52)))
       (setq malyon-alphabet (concat "abcdefghijklmnopqrstuvwxyz"
                                     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -3131,7 +3138,7 @@ The result is stored at encoded."
                           malyon-aread-beginning-of-line
                         (point))
                       (point))))
-             (vec  (malyon-string-to-vector input))
+             (vec  (string-to-vector input))
              (text (apply 'vector (mapcar 'malyon-unicode-to-zscii vec)))
              (len  (min (malyon-read-byte malyon-aread-text) (length text)))
              (i    0))
