@@ -1055,6 +1055,7 @@ bugs, testing, suggesting and/or contributing improvements:
   (malyon-print "A z-code interpreter for version 3, 5, and 8 games.")
   (malyon-newline)
   (malyon-print "(c) 1999-2011 by Peter Ilberg <peter.ilberg@gmail.com>")
+  (malyon-newline)
   (malyon-print "(c) 2016 by Erik Selberg <erik@selberg.org>")
   (malyon-newline)
   (malyon-newline))
