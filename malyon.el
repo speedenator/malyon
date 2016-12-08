@@ -3,7 +3,7 @@
 ;; Author: Peter Ilberg <peter.ilberg@gmail.com>, Christopher Madsen <cjm@cjmweb.net>, Erik Selberg <erik@selberg.org>
 ;; Maintainer: Christopher Madsen <cjm@cjmweb.net>, Erik Selberg <erik@selberg.org>
 ;; Version: 20161204
-;; Package-Requires: ((cl-lib "0.5") (bindat))
+;; Package-Requires: ((cl-lib "0.5"))
 ;; Keywords: games, emulations
 ;; URL: https://github.com/speedenator/malyon
 
