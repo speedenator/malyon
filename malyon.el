@@ -1,4 +1,4 @@
-; malyon.el --- mode to execute Z-code files version 3, 5, 8
+;;; malyon.el --- mode to execute Z-code files version 3, 5, 8
 
 ;; Author: Peter Ilberg <peter.ilberg@gmail.com>, Christopher Madsen <cjm@cjmweb.net>, Erik Selberg <erik@selberg.org>
 ;; Maintainer: Christopher Madsen <cjm@cjmweb.net>, Erik Selberg <erik@selberg.org>
